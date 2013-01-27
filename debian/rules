@@ -1,0 +1,44 @@
+#!/usr/bin/make -f
+
+CFLAGS = -Wall -g -O3
+PROCESSORS = $(grep "processors" /proc/cpuinfo | wc -l)
+
+config.status:
+	autoconf
+	./configure --without-xsel --without-gettext --prefix=/usr \
+		--sysconfdir=/etc --docdir=\$${prefix}/share/doc/fish \
+		--localstatedir=/var --mandir=\$${prefix}/share/man CFLAGS="$(CFLAGS)"
+
+configure: config.status
+
+build: configure
+	$(MAKE) -j $(PROCESSORS)
+
+install: build
+	$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+	dh_install -pfish2
+	dh_installdocs README.md
+	dh_installman -pfish2
+	dh_installmenu -pfish2
+	dh_installchangelogs
+	dh_installdeb
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_compress
+	dh_fixperms
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary-indep: build install
+
+binary: binary-indep binary-arch
+
+clean:
+	dh_clean
+	if [ -f Makefile ]; then $(MAKE) distclean; fi
+
+.PHONY: configure build install clean binary-indep binary-arch binary

@@ -1,0 +1,15 @@
+Source: fish2
+Section: shells
+Priority: optional
+Maintainer: bryant <bryant.wong@stonybrook.edu>
+Build-Depends: autoconf, debhelper, libncurses5-dev, doxygen
+Homepage: http://fishshell.com/
+
+Package: fish2
+Architecture: any
+Priority: optional
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: doc-base, menu
+Conflicts: fish
+Description: friendly interactive shell
+ The new fish at github.com/fish-shell/fish-shell.
